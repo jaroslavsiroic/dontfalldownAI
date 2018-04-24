@@ -1,3 +1,15 @@
+
+# LEVEL DESIGN ELEMENTS:
+
+# U - User (player)
+# E - Enemy
+# R - Rock (solid block)
+# P - Platform (with random time [1,9])
+# [number] - Platform with this much time
+# V, ^, >, < - Spike (and direction its facing)
+# W - Water
+# F - Finish
+
 levels = [
     [
     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
@@ -68,7 +80,7 @@ levels = [
     "R  U            R    E  00000RRRRR R",
     "RRRRRRRR     RRRRRRRRRRRRRRRRRRRRRRR",
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"],
-[
+    [
     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
     "R         V                   V                                  R",
     "R                                                                R",

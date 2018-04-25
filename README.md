@@ -1,6 +1,8 @@
 # Don't Fall Down With Evolutionary Algorithms
 DFD - Don't Fall Down! Platformer game developed with Python Pygame
+
 Goal - Train player bot to pass the game
+
 ![tutorial image](./assets/background_menu.png)
 ## Install and run
 To run this game you will need to install python 3 and pygame. To run this game hit

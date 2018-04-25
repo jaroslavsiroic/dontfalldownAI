@@ -12,8 +12,9 @@ To run this game you will need to install python 3 and pygame. To run this game 
 ## Tutorial
 ![tutorial image](./assets/background_and_tutorial.png)
 
-## Original Repo
-Check the game repo [here](https://github.com/jaroslavsiroic/dontfalldown)
+## Source used
+* Dont fall down game repo [here](https://github.com/jaroslavsiroic/dontfalldown)
+* Evolutionary Algorith and Neural nets classes from [FlapAI repo](https://github.com/justinglibert/flapai)
 
 ## Assets:
 * [finish flag](https://icons8.com/icon/35528/finish-flag)

@@ -82,6 +82,96 @@ class Player(Entity):
                 # collide up
 
 
+class Bot(Player):
+    current_cooldown = 0
+
+    def __init__(self, x, y, platforms, deadly_objects, enemies):
+        Player.__init__(self, x, y, platforms, deadly_objects)
+
+        self.image = pygame.image.load('assets/cube_face1_green.png').convert()
+        self.image = pygame.transform.scale(self.image, (48, 48))
+
+        self.enemies = enemies
+
+        self.xvel = 0
+        self.yvel = 0
+        self.left = self.right = self.up = self.onGround = False
+
+        self.rect = Rect(x, y, 48, 48)
+
+    def go_jump(self):
+        self.up = True
+
+    def go_right(self):
+        self.left = False
+        self.right = True
+
+    def go_left(self):
+        self.left = False
+        self.right = True
+
+    def ai(self):
+        rand = random.randint(0, 3)
+        if rand == 0:
+            self.go_right()
+        elif rand == 1:
+            self.go_jump()
+
+    def update(self):
+        self.ai()
+        if self.up:
+            # only jump if on the ground
+            if self.onGround: self.yvel -= 8
+        if self.left:
+            self.xvel = -8
+        if self.right:
+            self.xvel = 8
+        if not self.onGround:
+            # only accelerate with gravity if in the air
+            self.yvel += 0.3
+            # max falling speed
+            self.up = False
+            if self.yvel > 100: self.yvel = 100
+        if not(self.left or self.right):
+            self.xvel = 0
+        # increment in x direction
+        self.rect.left += self.xvel
+        # do x-axis collisions
+        self.collide(self.xvel, 0)
+        # increment in y direction
+        self.rect.top += self.yvel
+        # assuming we're in the air
+        self.onGround = False
+        # do y-axis collisions
+        self.collide(0, self.yvel)
+
+        collided_deadly_objects = pygame.sprite.spritecollide(self, self.deadly_objects, False)
+        collided_enemies = pygame.sprite.spritecollide(self, self.enemies, False)
+        if collided_deadly_objects or collided_enemies:
+            self.kill()
+
+    def collide(self, xvel, yvel):
+        collided_platforms = pygame.sprite.spritecollide(self, self.platforms, False)
+        for p in collided_platforms:
+            if isinstance(p, FinishBlock):
+                self.kill()
+                print("BOT WIN!")
+            if isinstance(p, Platform):
+                p.collided = True
+            if isinstance(p, Water) or isinstance(p, Spike):
+                self.kill()
+            if xvel > 0:
+                self.rect.right = p.rect.left
+            if xvel < 0:
+                self.rect.left = p.rect.right
+            if yvel > 0:
+                self.rect.bottom = p.rect.top
+                self.onGround = True
+                self.yvel = 0
+            if yvel < 0:
+                self.rect.top = p.rect.bottom
+
+
 class Enemy(Player):
     current_cooldown = 0
 
@@ -249,7 +339,8 @@ class Camera(object):
         return target.rect.move(self.state.topleft)
 
     def update(self, target):
-        self.state = self.camera_func(self.state, target.rect)
+        if target is not None:
+            self.state = self.camera_func(self.state, target.rect)
 
 
 def simple_camera(camera, target_rect):

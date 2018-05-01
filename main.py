@@ -256,6 +256,7 @@ def launch_level(level=levels[0]):
     platforms = pygame.sprite.Group()
     enemies = pygame.sprite.Group()
     deadly_objects = pygame.sprite.Group()
+    bots = pygame.sprite.Group()
     player = None
     x = y = 0
     # build the level
@@ -305,6 +306,11 @@ def launch_level(level=levels[0]):
             if col == "U":
                 player = Player(x, y, platforms, deadly_objects)
                 entities.add(player)
+            if col == "B":
+                for i in range(10):
+                    bot = Bot(x, y, platforms, deadly_objects, enemies)
+                    bots.add(bot)
+                    entities.add(bot)
             if col == "E":
                 e = Enemy(x, y, platforms, timer, deadly_objects)
                 entities.add(e)
@@ -312,9 +318,6 @@ def launch_level(level=levels[0]):
             x += 48
         y += 48
         x = 0
-
-    if player is None:
-        player = Player(48, 48, platforms, deadly_objects)
 
     total_level_width = len(level[0])*48
     total_level_height = len(level)*48
@@ -332,6 +335,8 @@ def launch_level(level=levels[0]):
                 return player_finish
             if e.type == player_died:
                 return player_died
+            if e.type == restart_level:
+                return restart_level
             if e.type == pause:
                 pause_event = pause_menu()
                 if pause_event == restart_level or pause_event == back_to_menu:
@@ -362,11 +367,19 @@ def launch_level(level=levels[0]):
             for x in range(48):
                 screen.blit(bg, (x * 48, y * 48))
 
-        camera.update(player)
+        if player is None and len(bots.sprites()) > 0:
+            camera.update(sorted(bots.sprites(), reverse=True, key=lambda b: b.rect.left)[0])
+        elif player is not None:
+            camera.update(player)
+            player.update(up, down, left, right, enemies)
+        elif len(bots.sprites()) is 0:
+            event_restart_level()
         # update player, draw everything else
-        player.update(up, down, left, right, enemies)
+
+
         platforms.update()
         enemies.update()
+        bots.update()
 
         for e in entities:
             screen.blit(e.image, camera.apply(e))

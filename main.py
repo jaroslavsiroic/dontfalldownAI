@@ -4,7 +4,11 @@ from pygame import *
 from game_objects import *
 from settings import *
 from level_design import levels
+from input import *
+import numpy as np
 global cameraX, cameraY
+
+# TODO: remove/alter all code marked with "inputs debug functionality" when inputs method is assured to work
 
 pygame.init()
 screen = pygame.display.set_mode(DISPLAY, FLAGS, DEPTH)
@@ -16,11 +20,16 @@ is_paused = False
 menu_background = pygame.image.load('assets/background_menu.png').convert()
 tutorial_background = pygame.image.load('assets/background_and_tutorial.png').convert()
 
+debug_images = []
+for i in range(0, 3, 1):
+    image = pygame.image.load('assets/debugcell{0}.png'.format(i)).convert()
+    image = pygame.transform.scale(image, (48, 48))
+    debug_images.append(image)
+
 bg = pygame.image.load('assets/S.png').convert()
 bg = pygame.transform.scale(bg, (48, 48))
 
 platform_images = []
-
 for i in range(1, 6, 1):
     image = pygame.image.load('assets/C{0}.png'.format(i)).convert()
     image = pygame.transform.scale(image, (48, 48))
@@ -98,7 +107,8 @@ def tutorial():
         timer.tick(15)
 
 
-def pause_menu():
+#inputs debug functionality
+def pause_menu(test_array):
     intro = True
 
     while intro:
@@ -117,6 +127,20 @@ def pause_menu():
         TextSurf, TextRect = text_objects("Game paused", largeText, WHITE)
         TextRect.center = (HALF_WIDTH, 50)
         screen.blit(TextSurf, TextRect)
+        
+        #inputs debug functionality
+        for x in range(0,INPUT_VIEW_RANGE_X*2+1):
+            for y in range(0,INPUT_VIEW_RANGE_Y*2+1):
+                p = int(test_array[x,y])
+                if 0 <= p <= 2:
+                    screen.blit(debug_images[p],(x*48,y*48))
+                else:
+                    screen.blit(debug_images[0],(x*48,y*48))
+                    largeText = pygame.font.SysFont(FONT, 40)
+                    TextSurf, TextRect = text_objects(str(p), largeText, WHITE)
+                    TextRect.center = (x*48+24, y*48+24)
+                    screen.blit(TextSurf, TextRect)
+        #inputs debug functionality
 
         button("Resume", HALF_WIDTH-100, 200, 200, 50, PRIMARY, PRIMARY_HOVER, event_resume)
         button("Restart level", HALF_WIDTH - 100, 260, 200, 50, PRIMARY, PRIMARY_HOVER, event_restart_level)
@@ -257,6 +281,8 @@ def launch_level(level=levels[0]):
     enemies = pygame.sprite.Group()
     deadly_objects = pygame.sprite.Group()
     bots = pygame.sprite.Group()
+    #inputs debug functionality
+    specific_bot = None
     player = None
     x = y = 0
     # build the level
@@ -307,10 +333,12 @@ def launch_level(level=levels[0]):
                 player = Player(x, y, platforms, deadly_objects)
                 entities.add(player)
             if col == "B":
-                for i in range(10):
+                for i in range(1):
                     bot = Bot(x, y, platforms, deadly_objects, enemies)
                     bots.add(bot)
                     entities.add(bot)
+                    #inputs debug functionality
+                    specific_bot = bot
             if col == "E":
                 e = Enemy(x, y, platforms, timer, deadly_objects)
                 entities.add(e)
@@ -338,7 +366,13 @@ def launch_level(level=levels[0]):
             if e.type == restart_level:
                 return restart_level
             if e.type == pause:
-                pause_event = pause_menu()
+                #inputs debug functionality
+                if specific_bot != None:
+                    test_array = inputs(specific_bot.rect.left,specific_bot.rect.top,48,48,total_level_width,total_level_height,platforms,deadly_objects,enemies)
+                else:
+                    test_array = inputs(0,0,48,48,total_level_width,total_level_height,platforms,deadly_objects,enemies)
+                pause_event = pause_menu(test_array)
+                #inputs debug functionality
                 if pause_event == restart_level or pause_event == back_to_menu:
                     return pause_event
             if e.type == KEYDOWN and e.key == K_ESCAPE:

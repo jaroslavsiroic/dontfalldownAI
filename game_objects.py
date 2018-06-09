@@ -93,6 +93,8 @@ class Bot(Player):
 
         self.enemies = enemies
 
+        self.rnd = random.Random()
+
         self.xvel = 0
         self.yvel = 0
         self.left = self.right = self.up = self.onGround = False
@@ -111,7 +113,7 @@ class Bot(Player):
         self.right = True
 
     def ai(self):
-        rand = random.randint(0, 3)
+        rand = self.rnd.randint(0, 3)
         if rand == 0:
             self.go_right()
         elif rand == 1:
@@ -181,7 +183,9 @@ class Enemy(Player):
         self.yvel = 0
         self.onGround = False
 
-        self.cooldown = random.randint(3, 7) * 1000
+        self.rnd = random.Random(SEED)
+
+        self.cooldown = self.rnd.randint(3, 7) * 1000
         self.clock = clock
 
         self.image = pygame.image.load('assets/cube_enemy1.png').convert()
@@ -194,7 +198,7 @@ class Enemy(Player):
     def ai(self):
         if self.current_cooldown <= 0:
             self.current_cooldown = self.cooldown
-            if random.randint(0, 1):
+            if self.rnd.randint(0, 1):
                 self.left = True
                 self.right = False
             else:
@@ -206,7 +210,7 @@ class Enemy(Player):
             self.current_cooldown -= self.clock.get_time()
 
     def jump(self):
-        if random.randint(0, 1):
+        if self.rnd.randint(0, 1):
             self.up = True
 
     def changeDirection(self):
@@ -247,7 +251,7 @@ class Enemy(Player):
 
     def collide(self, xvel, yvel):
         collided_platforms = pygame.sprite.spritecollide(self, self.platforms, False)
-        rand = random.randint(0, 1)
+        rand = self.rnd.randint(0, 1)
         for p in collided_platforms:
             if isinstance(p, Water) or isinstance(p, Spike):
                 self.kill()

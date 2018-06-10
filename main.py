@@ -343,14 +343,17 @@ def launch_level(level=levels[0]):
                 e = Enemy(x, y, platforms, timer, deadly_objects)
                 entities.add(e)
                 enemies.add(e)
-            x += 48
-        y += 48
+            x += CELL_WIDTH
+        y += CELL_HEIGHT
         x = 0
 
-    total_level_width = len(level[0])*48
-    total_level_height = len(level)*48
+    total_level_width = len(level[0])*CELL_WIDTH
+    total_level_height = len(level)*CELL_HEIGHT
     camera = Camera(complex_camera, total_level_width, total_level_height)
 
+    level_width = len(level[0])
+    level_height = len(level)
+    level_array = np.zeros((level_width,level_height))
     in_game = True
 
     while in_game:
@@ -368,9 +371,9 @@ def launch_level(level=levels[0]):
             if e.type == pause:
                 #inputs debug functionality
                 if specific_bot != None:
-                    test_array = inputs(specific_bot.rect.left,specific_bot.rect.top,48,48,total_level_width,total_level_height,platforms,deadly_objects,enemies)
+                    test_array = new_inputs(level_array,specific_bot.rect.left,specific_bot.rect.top)
                 else:
-                    test_array = inputs(0,0,48,48,total_level_width,total_level_height,platforms,deadly_objects,enemies)
+                    test_array = new_inputs(level_array,0,0)
                 pause_event = pause_menu(test_array)
                 #inputs debug functionality
                 if pause_event == restart_level or pause_event == back_to_menu:
@@ -409,7 +412,11 @@ def launch_level(level=levels[0]):
         elif len(bots.sprites()) is 0:
             event_restart_level()
         # update player, draw everything else
-
+        
+        level_array.fill(0)
+        sprites_to_level_array(level_array,platforms,1)
+        sprites_to_level_array(level_array,deadly_objects,2)
+        sprites_to_level_array(level_array,enemies,2)
 
         platforms.update()
         enemies.update()

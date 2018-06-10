@@ -10,6 +10,9 @@ DEPTH = 32
 FLAGS = 0
 CAMERA_SLACK = 30
 
+CELL_WIDTH = 48
+CELL_HEIGHT = 48
+
 player_finish = pygame.USEREVENT + 1
 player_died = pygame.USEREVENT + 2
 restart_level = pygame.USEREVENT + 3

@@ -2,6 +2,7 @@ import pygame
 from pygame import *
 import random
 from settings import *
+import numpy as np
 
 
 class Entity(pygame.sprite.Sprite):
@@ -94,6 +95,7 @@ class Bot(Player):
         self.enemies = enemies
 
         self.rnd = random.Random()
+        self.input_table = np.zeros((OUTPUT_SIZE,1))
 
         self.xvel = 0
         self.yvel = 0
@@ -109,14 +111,18 @@ class Bot(Player):
         self.right = True
 
     def go_left(self):
-        self.left = False
-        self.right = True
+        self.left = True
+        self.right = False
 
     def ai(self):
-        rand = self.rnd.randint(0, 3)
-        if rand == 0:
+        self.up = False
+        self.right = False
+        self.left = False
+        if self.input_table[0] > 0.5:
+            self.go_left()
+        if self.input_table[1] > 0.5:
             self.go_right()
-        elif rand == 1:
+        if self.input_table[2] > 0.5:
             self.go_jump()
 
     def update(self):

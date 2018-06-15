@@ -129,17 +129,18 @@ def pause_menu(test_array):
         screen.blit(TextSurf, TextRect)
         
         #inputs debug functionality
-        for x in range(0,INPUT_VIEW_RANGE_X*2+1):
-            for y in range(0,INPUT_VIEW_RANGE_Y*2+1):
-                p = int(test_array[x,y])
-                if 0 <= p <= 2:
-                    screen.blit(debug_images[p],(x*48,y*48))
-                else:
-                    screen.blit(debug_images[0],(x*48,y*48))
-                    largeText = pygame.font.SysFont(FONT, 40)
-                    TextSurf, TextRect = text_objects(str(p), largeText, WHITE)
-                    TextRect.center = (x*48+24, y*48+24)
-                    screen.blit(TextSurf, TextRect)
+        if INPUT_OUTPUT_DEBUG == 1:
+            for x in range(0,INPUT_VIEW_RANGE_X*2+1):
+                for y in range(0,INPUT_VIEW_RANGE_Y*2+1):
+                    p = int(test_array[x,y])
+                    if -1 <= p <= 1:
+                        screen.blit(debug_images[p+1],(x*48,y*48))
+                    else:
+                        screen.blit(debug_images[1],(x*48,y*48))
+                        largeText = pygame.font.SysFont(FONT, 40)
+                        TextSurf, TextRect = text_objects(str(p), largeText, WHITE)
+                        TextRect.center = (x*48+24, y*48+24)
+                        screen.blit(TextSurf, TextRect)
         #inputs debug functionality
 
         button("Resume", HALF_WIDTH-100, 200, 200, 50, PRIMARY, PRIMARY_HOVER, event_resume)
@@ -242,8 +243,8 @@ def main_menu():
         TextRect.center = (HALF_WIDTH, 50)
         screen.blit(TextSurf, TextRect)
 
-        button("Play!", HALF_WIDTH-100, 200, 200, 50, PRIMARY, PRIMARY_HOVER, level_menu)
-        button("Tutorial", HALF_WIDTH - 100, 260, 200, 50, PRIMARY, PRIMARY_HOVER, tutorial)
+        button("Begin", HALF_WIDTH-100, 200, 200, 50, PRIMARY, PRIMARY_HOVER, level_menu)
+        #button("Tutorial", HALF_WIDTH - 100, 260, 200, 50, PRIMARY, PRIMARY_HOVER, tutorial)
         button("Quit", HALF_WIDTH-100, 320, 200, 50, DANGER, DANGER_HOVER, exit_game)
 
         largeText = pygame.font.SysFont(FONT2, 20)
@@ -282,7 +283,11 @@ def launch_level(level=levels[0]):
     deadly_objects = pygame.sprite.Group()
     bots = pygame.sprite.Group()
     #inputs debug functionality
-    specific_bot = None
+    if INPUT_OUTPUT_DEBUG == 1:
+        specific_bot = None
+        input_randomization_frame_max = 3
+        input_randomization_frame_countdown = input_randomization_frame_max
+    #inputs debug functionality
     player = None
     x = y = 0
     # build the level
@@ -338,7 +343,8 @@ def launch_level(level=levels[0]):
                     bots.add(bot)
                     entities.add(bot)
                     #inputs debug functionality
-                    specific_bot = bot
+                    if INPUT_OUTPUT_DEBUG == 1:
+                        specific_bot = bot
             if col == "E":
                 e = Enemy(x, y, platforms, timer, deadly_objects)
                 entities.add(e)
@@ -370,10 +376,13 @@ def launch_level(level=levels[0]):
                 return restart_level
             if e.type == pause:
                 #inputs debug functionality
-                if specific_bot != None:
-                    test_array = new_inputs(level_array,specific_bot.rect.left,specific_bot.rect.top)
+                if INPUT_OUTPUT_DEBUG == 1:
+                    if specific_bot != None:
+                        test_array = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top)
+                    else:
+                        test_array = inputs(level_array,0,0)
                 else:
-                    test_array = new_inputs(level_array,0,0)
+                    test_array = None
                 pause_event = pause_menu(test_array)
                 #inputs debug functionality
                 if pause_event == restart_level or pause_event == back_to_menu:
@@ -415,8 +424,21 @@ def launch_level(level=levels[0]):
         
         level_array.fill(0)
         sprites_to_level_array(level_array,platforms,1)
-        sprites_to_level_array(level_array,deadly_objects,2)
-        sprites_to_level_array(level_array,enemies,2)
+        sprites_to_level_array(level_array,deadly_objects,-1)
+        sprites_to_level_array(level_array,enemies,-1)
+        
+        #inputs debug functionality
+        if INPUT_OUTPUT_DEBUG == 1:
+            input_randomization_frame_countdown -= 1
+            if input_randomization_frame_countdown < 0:
+                input_randomization_frame_countdown = input_randomization_frame_max
+                input_rand = specific_bot.rnd.randint(0, 2)
+                specific_bot.input_table[0] = input_rand
+                input_rand = specific_bot.rnd.randint(0, 2)
+                specific_bot.input_table[1] = input_rand
+                input_rand = specific_bot.rnd.randint(0, 2)
+                specific_bot.input_table[2] = input_rand
+        #inputs debug functionality
 
         platforms.update()
         enemies.update()

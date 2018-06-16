@@ -3,6 +3,8 @@ import pygame
 from pygame import *
 from game_objects import *
 from settings import *
+from population import *
+from genome import *
 from level_design import levels
 from input import *
 import numpy as np
@@ -127,7 +129,7 @@ def pause_menu(test_array):
         TextSurf, TextRect = text_objects("Game paused", largeText, WHITE)
         TextRect.center = (HALF_WIDTH, 50)
         screen.blit(TextSurf, TextRect)
-        
+
         #inputs debug functionality
         if INPUT_OUTPUT_DEBUG == 1:
             for x in range(0,INPUT_VIEW_RANGE_X*2+1):
@@ -258,23 +260,62 @@ def main_menu():
 
 def level_menu(level=levels[0], index=0):
 
-    level_event = launch_level(level)
+    localBestFitness = 0
+    population = Population()
+    population.generateRandomPopulation()
+    generation = 1
 
-    if level_event == player_finish:
-        you_win_event = you_win_menu(index)
-        if you_win_event == restart_level:
-            level_menu(level, index)
-        elif you_win_event == next_level:
-            level_menu(levels[index+1], index+1)
-    if level_event == player_died:
-        game_over_event = game_over_menu()
-        if game_over_event == restart_level:
-            level_menu(level, index)
-    if level_event == restart_level:
-        level_menu(level, index)
+    lastgenerationaveragefitness = 0
+    #Main Loop
+    while generation <= MAX_GENERATIONS :
+        botnmbr = 1
+
+        for i in range(population.size()):
+
+            level_output = launch_level(levels[0], population.getGenome(i))
+
+            if level_output['event'] == player_finish:
+                you_win_event = you_win_menu(index)
+                if you_win_event['event'] == restart_level:
+                    level_menu(level, index)
+                elif you_win_event['event'] == next_level:
+                    level_menu(levels[index+1], index+1)
+            if level_output['event'] == player_died:
+                game_over_event = game_over_menu()
+                if game_over_event == restart_level:
+                    level_menu(level, index)
+            if level_output['event'] == restart_level:
+                score = level_output['score']
+                population.setGenomeFitness(i,score)
+                # informationforscreen = {
+                # 'generation' : generation,
+                # 'botnumber' : botdnmbr,
+                # 'lastfitness' : genome.fitness,
+                # 'lastgenerationaveragefitness' : lastgenerationaveragefitness,
+                # 'bestfitness' : localBestFitness
+                # }
+                # updateScreen(informationforscreen)
+                # if genome.fitness > localBestFitness:
+                #     global bestFitness
+                #     bestFitness = genome.fitness
+                #     genome.network.save(today + "/bestfitness.json")
+                botnmbr += 1
 
 
-def launch_level(level=levels[0]):
+        # global fitnessovergeneration
+        # fitnessovergeneration.append(population.averageFitness())
+
+        # lastgenerationaveragefitness = population.averageFitness()
+
+        # global fittestovergeneration
+        # fittestovergeneration.append(population.findFittest().fitness)
+        #Evolve the population
+        population.evolvePopulation()
+        generation += 1
+
+def launch_level(level=levels[0], genome=None):
+
+    genome.network.fromgenes(genome.genes)
 
     up = down = left = right = False
     entities = pygame.sprite.Group()
@@ -343,8 +384,8 @@ def launch_level(level=levels[0]):
                     bots.add(bot)
                     entities.add(bot)
                     #inputs debug functionality
-                    if INPUT_OUTPUT_DEBUG == 1:
-                        specific_bot = bot
+                    # if INPUT_OUTPUT_DEBUG == 1:
+                    specific_bot = bot
             if col == "E":
                 e = Enemy(x, y, platforms, timer, deadly_objects)
                 entities.add(e)
@@ -361,6 +402,11 @@ def launch_level(level=levels[0]):
     level_height = len(level)
     level_array = np.zeros((level_width,level_height))
     in_game = True
+    return_object = {
+        'event': None,
+        'genome': None,
+        'score': None
+    }
 
     while in_game:
         timer.tick(60)
@@ -369,11 +415,16 @@ def launch_level(level=levels[0]):
             if e.type == QUIT:
                 exit_game()
             if e.type == player_finish:
-                return player_finish
+                return_object['event'] = player_finish
+                return return_object
             if e.type == player_died:
-                return player_died
+                return_object['event'] = player_died
+                return return_object
             if e.type == restart_level:
-                return restart_level
+                return_object['event'] = restart_level
+                return_object['genome'] = genome
+                return_object['score'] = specific_bot.rect.left
+                return return_object
             if e.type == pause:
                 #inputs debug functionality
                 if INPUT_OUTPUT_DEBUG == 1:
@@ -386,7 +437,8 @@ def launch_level(level=levels[0]):
                 pause_event = pause_menu(test_array)
                 #inputs debug functionality
                 if pause_event == restart_level or pause_event == back_to_menu:
-                    return pause_event
+                    return_object['event'] = pause_event
+                    return return_object
             if e.type == KEYDOWN and e.key == K_ESCAPE:
                 raise SystemExit("ESCAPE")
             if e.type == KEYDOWN and e.key == K_SPACE:
@@ -421,12 +473,17 @@ def launch_level(level=levels[0]):
         elif len(bots.sprites()) is 0:
             event_restart_level()
         # update player, draw everything else
-        
+
         level_array.fill(0)
         sprites_to_level_array(level_array,platforms,1)
         sprites_to_level_array(level_array,deadly_objects,-1)
         sprites_to_level_array(level_array,enemies,-1)
-        
+
+
+        NNinput = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top)
+        print(NNinput)
+        specific_bot.input_table = genome.network.feedforward([[NNinput[0][0]], [NNinput[0][1]], [NNinput[0][2]]])
+
         #inputs debug functionality
         if INPUT_OUTPUT_DEBUG == 1:
             input_randomization_frame_countdown -= 1

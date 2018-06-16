@@ -2,7 +2,7 @@ class Config(object):
     #If Debug is true, show various info on the game screen
     debug = False
     #The architecture of the ANN, please do not change first and last element of the array
-    networkArchitecture = [2,3,1]
+    networkArchitecture = [3,3,3]
     #Number of Birds in a generation
     numberOfIndividuals = 100
     #Maximum generation before exiting the Genetic Algorithm

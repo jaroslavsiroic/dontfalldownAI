@@ -3,7 +3,7 @@ from config import Config
 from network import Network
 
 class Genome(object):
-    networkArchitecture = [2,3,1]
+    networkArchitecture = Config.networkArchitecture
     fitness = 0
     mutationMinimizer = 1
 

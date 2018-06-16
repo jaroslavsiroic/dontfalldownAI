@@ -22,7 +22,7 @@ levels = [
     "R          VVV                  VVVV                      RR          VVVR",
     "R                                                   ^     VV             R",
     "RB     ^        <R    E     0^        ^^^0  E       0          ^   ^    FR",
-    "R111111R111111111R11111111111111111111RRR1111111111111111111111R111R11111R",
+    "R011111R111111111R11111111111111111111RRR1111111111111111111111R111R11111R",
     "R^^^^^^R^^^^^^^^^R^^^^^^^^^^^^^^^^^^^^RRR^^^^^^^^^^^^^^^^^^^^^^R^^^R^^^^^R",
     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",]
 ]

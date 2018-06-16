@@ -171,6 +171,10 @@ class Population(object):
 
         if Config.crossoverVersion==1:
             genome = Genome()
+            print('Genome 1')
+            print(genome1.size())
+            print('Genome 2')
+            print(genome2.size())
             for i in range(genome1.size()):
                 # Crossover
                 if random.random() <= Config.uniformRate:

@@ -8,6 +8,7 @@ from genome import *
 from level_design import levels
 from input import *
 import numpy as np
+from time import gmtime, strftime
 global cameraX, cameraY
 
 # TODO: remove/alter all code marked with "inputs debug functionality" when inputs method is assured to work
@@ -18,6 +19,9 @@ pygame.display.set_caption("Don't Fall Down!")
 timer = pygame.time.Clock()
 
 is_paused = False
+bestFitness = 0
+informationforscreen = None
+today = "./saved/" + strftime("%Y_%m_%d__%H_%M_%S", gmtime())
 
 menu_background = pygame.image.load('assets/background_menu.png').convert()
 tutorial_background = pygame.image.load('assets/background_and_tutorial.png').convert()
@@ -250,12 +254,40 @@ def main_menu():
         button("Quit", HALF_WIDTH-100, 320, 200, 50, DANGER, DANGER_HOVER, exit_game)
 
         largeText = pygame.font.SysFont(FONT2, 20)
-        TextSurf, TextRect = text_objects("Developed by Jaroslav Siroic [2017-12]", largeText, WHITE)
+        TextSurf, TextRect = text_objects("Game developed by Jaroslav Siroic [2017-12]", largeText, WHITE)
+        TextRect.center = (HALF_WIDTH, WIN_HEIGHT-30)
+        screen.blit(TextSurf, TextRect)
+        TextSurf, TextRect = text_objects("AI with evolutionary algorithm developed by Jaroslav Siroic and Jakub Mazurkiewicz [2018-06]", largeText, WHITE)
         TextRect.center = (HALF_WIDTH, WIN_HEIGHT-15)
         screen.blit(TextSurf, TextRect)
 
         pygame.display.update()
         timer.tick(15)
+
+
+def score_board():
+    if informationforscreen != None:
+        largeText = pygame.font.SysFont(FONT, 20)
+        TextSurf, TextRect = text_objects("Generation: {0}".format(informationforscreen['generation']), largeText, WHITE)
+        TextRect.top = 15
+        TextRect.left = WIN_WIDTH - 200
+        screen.blit(TextSurf, TextRect)
+        TextSurf, TextRect = text_objects("Bot NR: {0}".format(informationforscreen['botnumber']), largeText, WHITE)
+        TextRect.top = 30
+        TextRect.left = WIN_WIDTH - 200
+        screen.blit(TextSurf, TextRect)
+        TextSurf, TextRect = text_objects("Last fitness: {0}".format(informationforscreen['lastfitness']), largeText, WHITE)
+        TextRect.top = 45
+        TextRect.left = WIN_WIDTH - 200
+        screen.blit(TextSurf, TextRect)
+        TextSurf, TextRect = text_objects("Last Gen avg fitness: {0}".format(informationforscreen['lastgenerationaveragefitness']), largeText, WHITE)
+        TextRect.top = 60
+        TextRect.left = WIN_WIDTH - 200
+        screen.blit(TextSurf, TextRect)
+        TextSurf, TextRect = text_objects("Best fitness: {0}".format(informationforscreen['bestfitness']), largeText, WHITE)
+        TextRect.top = 75
+        TextRect.left = WIN_WIDTH - 200
+        screen.blit(TextSurf, TextRect)
 
 
 def level_menu(level=levels[0], index=0):
@@ -273,7 +305,6 @@ def level_menu(level=levels[0], index=0):
         for i in range(population.size()):
 
             level_output = launch_level(levels[0], population.getGenome(i))
-
             if level_output['event'] == player_finish:
                 you_win_event = you_win_menu(index)
                 if you_win_event['event'] == restart_level:
@@ -287,18 +318,20 @@ def level_menu(level=levels[0], index=0):
             if level_output['event'] == restart_level:
                 score = level_output['score']
                 population.setGenomeFitness(i,score)
-                # informationforscreen = {
-                # 'generation' : generation,
-                # 'botnumber' : botdnmbr,
-                # 'lastfitness' : genome.fitness,
-                # 'lastgenerationaveragefitness' : lastgenerationaveragefitness,
-                # 'bestfitness' : localBestFitness
-                # }
-                # updateScreen(informationforscreen)
-                # if genome.fitness > localBestFitness:
-                #     global bestFitness
-                #     bestFitness = genome.fitness
-                #     genome.network.save(today + "/bestfitness.json")
+
+                global informationforscreen
+                informationforscreen = {
+                    'generation' : generation,
+                    'botnumber' : botnmbr,
+                    'lastfitness' : score,
+                    'lastgenerationaveragefitness' : lastgenerationaveragefitness,
+                    'bestfitness' : localBestFitness
+                }
+                if score > localBestFitness:
+                    global bestFitness
+                    bestFitness = score
+                    genome = level_output['genome']
+                    genome.network.save(today + "/bestfitness.json")
                 botnmbr += 1
 
 
@@ -409,7 +442,7 @@ def launch_level(level=levels[0], genome=None):
     }
 
     while in_game:
-        timer.tick(60)
+        timer.tick(90)
 
         for e in pygame.event.get():
             if e.type == QUIT:
@@ -480,9 +513,9 @@ def launch_level(level=levels[0], genome=None):
         sprites_to_level_array(level_array,enemies,-1)
 
 
-        NNinput = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top)
-        print(NNinput)
-        specific_bot.input_table = genome.network.feedforward([[NNinput[0][0]], [NNinput[0][1]], [NNinput[0][2]]])
+        NNinput = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top).flatten()
+        NNinput = np.reshape(NNinput, (NNinput.shape[0],-1))
+        specific_bot.input_table = genome.network.feedforward(NNinput)
 
         #inputs debug functionality
         if INPUT_OUTPUT_DEBUG == 1:
@@ -504,7 +537,7 @@ def launch_level(level=levels[0], genome=None):
         for e in entities:
             screen.blit(e.image, camera.apply(e))
         button("PAUSE", 10, 10, 100, 50, PRIMARY, PRIMARY_HOVER, event_pause)
-
+        score_board()
         pygame.display.flip()
 
 

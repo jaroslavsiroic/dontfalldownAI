@@ -331,6 +331,7 @@ def level_menu(level=levels[0], index=0):
                 if score > localBestFitness:
                     global bestFitness
                     bestFitness = score
+                    localBestFitness = score
                     genome = level_output['genome']
                     genome.network.save(today + "/bestfitness.json")
                 botnmbr += 1
@@ -339,7 +340,7 @@ def level_menu(level=levels[0], index=0):
         # global fitnessovergeneration
         # fitnessovergeneration.append(population.averageFitness())
 
-        # lastgenerationaveragefitness = population.averageFitness()
+        lastgenerationaveragefitness = population.averageFitness()
 
         # global fittestovergeneration
         # fittestovergeneration.append(population.findFittest().fitness)

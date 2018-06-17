@@ -118,6 +118,11 @@ class Bot(Player):
         self.up = False
         self.right = False
         self.left = False
+        if self.input_table[0] > 0.5 and self.input_table[1] > 0.5:
+            if self.input_table[0] > self.input_table[1]:
+                self.input_table[1] = 0
+            else:
+                self.input_table[0] = 0
         if self.input_table[0] > 0.5:
             self.go_left()
         if self.input_table[1] > 0.5:

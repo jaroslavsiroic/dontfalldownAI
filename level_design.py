@@ -12,30 +12,30 @@
 # F - Finish
 
 levels = [
+    # [
+    # "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    # "R                                                                                                       R",
+    # "R                                                                                                       R",
+    # "R                                                                                                       R",
+    # "R            RRRRRRRR                     RRR                  RRRR                                  RRRR",
+    # "R            VVVVVVVV                     VVV                  VVVV                      RR          VVVR",
+    # "R                                                                                  ^     VV             R",
+    # "RB                          ^         ^        <R    E     0^        ^^^0  E       0          ^   ^    FR",
+    # "R011111111111111111111111111R111111111R111111111R11111111111111111111RRR1111111111111111111111R111R11111R",
+    # "R^^^^^^^^^^^^^^^^^^^^^^^^^^^R^^^^^^^^^R^^^^^^^^^R^^^^^^^^^^^^^^^^^^^^RRR^^^^^^^^^^^^^^^^^^^^^^R^^^R^^^^^R",
+    # "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",],
     [
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "R                                                                                                       R",
-    "R                                                                                                       R",
-    "R                                                                                                       R",
-    "R            RRRRRRRR                     RRR                  RRRR                                  RRRR",
-    "R            VVVVVVVV                     VVV                  VVVV                      RR          VVVR",
-    "R                                                                                  ^     VV             R",
-    "RB                          ^         ^        <R    E     0^        ^^^0  E       0          ^   ^    FR",
-    "R011111111111111111111111111R111111111R111111111R11111111111111111111RRR1111111111111111111111R111R11111R",
-    "R^^^^^^^^^^^^^^^^^^^^^^^^^^^R^^^^^^^^^R^^^^^^^^^R^^^^^^^^^^^^^^^^^^^^RRR^^^^^^^^^^^^^^^^^^^^^^R^^^R^^^^^R",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",],
-    [
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "R                                                                        R",
-    "R                                                                        R",
-    "R                                                                        R",
-    "R                                                                        R",
-    "R          RRR                  RRRR                                  RRRR",
-    "R          VVV                  VVVV                      RR          VVVR",
-    "R                                                   ^     VV             R",
-    "RB     ^        <R    E     0^        ^^^0  E       0          ^   ^    FR",
-    "R111111R111111111R11111111111111111111RRR1111111111111111111111R111R11111R",
-    "R^^^^^^R^^^^^^^^^R^^^^^^^^^^^^^^^^^^^^RRR^^^^^^^^^^^^^^^^^^^^^^R^^^R^^^^^R",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",]
+    "               RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "               R                                                                        R",
+    "               R                                                                        R",
+    "               R                                                                        R",
+    "               R                                                                        R",
+    "               R          RRR                  RRRR                                  RRRR",
+    "               R          VVV                  VVVV                      RR          VVVR",
+    "               R                                                   ^     VV             R",
+    "               RB     ^        <R    E     0^        ^^^0  E       0          ^   ^    FR",
+    "               R111111R111111111R11111111111111111111RRR1111111111111111111111R111R11111R",
+    "               R^^^^^^R^^^^^^^^^R^^^^^^^^^^^^^^^^^^^^RRR^^^^^^^^^^^^^^^^^^^^^^R^^^R^^^^^R",
+    "               RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",]
 ]
 

@@ -11,7 +11,7 @@ from input import *
 import numpy as np
 from time import gmtime, strftime
 global cameraX, cameraY
-
+import pandas as pd
 # TODO: remove/alter all code marked with "inputs debug functionality" when inputs method is assured to work
 
 pygame.init()
@@ -131,21 +131,6 @@ def pause_menu(test_array):
         TextSurf, TextRect = text_objects("Game paused", largeText, WHITE)
         TextRect.center = (HALF_WIDTH, 50)
         screen.blit(TextSurf, TextRect)
-
-        #inputs debug functionality
-        if INPUT_OUTPUT_DEBUG == 1:
-            for x in range(0,INPUT_VIEW_RANGE_X*2+1):
-                for y in range(0,INPUT_VIEW_RANGE_Y*2+1):
-                    p = int(test_array[x,y])
-                    if -1 <= p <= 1:
-                        screen.blit(debug_images[p+1],(x*48,y*48))
-                    else:
-                        screen.blit(debug_images[1],(x*48,y*48))
-                        largeText = pygame.font.SysFont(FONT, 40)
-                        TextSurf, TextRect = text_objects(str(p), largeText, WHITE)
-                        TextRect.center = (x*48+24, y*48+24)
-                        screen.blit(TextSurf, TextRect)
-        #inputs debug functionality
 
         button("Resume", HALF_WIDTH-100, 200, 200, 50, PRIMARY, PRIMARY_HOVER, event_resume)
         button("Back to menu", HALF_WIDTH-100, 320, 200, 50, DANGER, DANGER_HOVER, event_back_to_menu)
@@ -284,11 +269,11 @@ def score_board():
 
 def level_menu(level=levels[0], index=0):
 
-    localBestFitness = 0
+    localBestFitness = -1
     population = Population()
     population.generateRandomPopulation()
     generation = 1
-
+    results = pd.DataFrame(columns=['generation', 'fitness'])
     lastgenerationaveragefitness = 0
     #Main Loop
     while generation <= MAX_GENERATIONS :
@@ -309,8 +294,8 @@ def level_menu(level=levels[0], index=0):
                     level_menu(level, index)
             if level_output['event'] == restart_level:
                 score = level_output['score']
+                results.loc[len(results)] = [generation, score]
                 population.setGenomeFitness(i,score)
-
                 global informationforscreen
                 informationforscreen = {
                     'generation' : generation,
@@ -338,6 +323,7 @@ def level_menu(level=levels[0], index=0):
         #Evolve the population
         population.evolvePopulation()
         generation += 1
+        results.to_csv(today + '/results.csv')
 
 def launch_level(level=levels[0], genome=None):
 
@@ -357,6 +343,7 @@ def launch_level(level=levels[0], genome=None):
     #inputs debug functionality
     player = None
     x = y = 0
+    STARTX = 0
     # build the level
 
     for row in level:
@@ -405,6 +392,7 @@ def launch_level(level=levels[0], genome=None):
                 player = Player(x, y, platforms, deadly_objects)
                 entities.add(player)
             if col == "B":
+                STARTX = x
                 for i in range(1):
                     bot = Bot(x, y, platforms, deadly_objects, enemies)
                     bots.add(bot)
@@ -443,7 +431,7 @@ def launch_level(level=levels[0], genome=None):
             if e.type == player_finish:
                 return_object['event'] = restart_level
                 return_object['genome'] = genome
-                return_object['score'] = specific_bot.rect.left
+                return_object['score'] = specific_bot.rect.left - STARTX + 1000
                 return return_object
             if e.type == player_died:
                 return_object['event'] = player_died
@@ -451,7 +439,7 @@ def launch_level(level=levels[0], genome=None):
             if e.type == restart_level:
                 return_object['event'] = restart_level
                 return_object['genome'] = genome
-                return_object['score'] = specific_bot.rect.left
+                return_object['score'] = specific_bot.rect.left - STARTX
                 return return_object
             if e.type == pause:
                 #inputs debug functionality
@@ -505,8 +493,8 @@ def launch_level(level=levels[0], genome=None):
         sprites_to_level_array(level_array,deadly_objects,-1)
         sprites_to_level_array(level_array,enemies,-1)
 
-
-        NNinput = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top).flatten()
+        debug_array = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top)
+        NNinput = debug_array.flatten()
         NNinput = np.reshape(NNinput, (NNinput.shape[0],-1))
         specific_bot.input_table = genome.network.feedforward(NNinput)
 
@@ -516,7 +504,37 @@ def launch_level(level=levels[0], genome=None):
 
         for e in entities:
             screen.blit(e.image, camera.apply(e))
-        button("PAUSE", 10, 10, 100, 50, PRIMARY, PRIMARY_HOVER, event_pause)
+
+        #inputs debug functionality
+        if INPUT_OUTPUT_DEBUG == 1:
+            for x in range(0,INPUT_VIEW_RANGE_X*2+1):
+                for y in range(0,INPUT_VIEW_RANGE_Y*2+1):
+                    p = int(debug_array[x,y])
+                    if -1 <= p <= 1:
+                        screen.blit(debug_images[p+1],(x*48,y*48))
+                    else:
+                        screen.blit(debug_images[1],(x*48,y*48))
+                        largeText = pygame.font.SysFont(FONT, 40)
+                        TextSurf, TextRect = text_objects(str(p), largeText, WHITE)
+                        TextRect.center = (x*48+24, y*48+24)
+                        screen.blit(TextSurf, TextRect)
+
+            largeText = pygame.font.SysFont(FONT, 40)
+            TextSurf, TextRect = text_objects("LEFT", largeText, DANGER if specific_bot.left else WHITE)
+            TextRect.top = WIN_HEIGHT-50
+            TextRect.left = 200
+            screen.blit(TextSurf, TextRect)
+            TextSurf, TextRect = text_objects("JUMP", largeText, DANGER if specific_bot.up else WHITE)
+            TextRect.top = WIN_HEIGHT-50
+            TextRect.left = 300
+            screen.blit(TextSurf, TextRect)
+            TextSurf, TextRect = text_objects("RIGHT", largeText, DANGER if specific_bot.right else WHITE)
+            TextRect.top = WIN_HEIGHT-50
+            TextRect.left = 400
+            screen.blit(TextSurf, TextRect)
+        #inputs debug functionality
+
+        button("PAUSE", 10, WIN_HEIGHT-60, 100, 50, PRIMARY, PRIMARY_HOVER, event_pause)
         score_board()
         pygame.display.flip()
 

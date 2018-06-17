@@ -1,6 +1,8 @@
 import sys
 import pygame
+import json
 from pygame import *
+from genome import *
 from game_objects import *
 from settings import *
 import numpy as np
@@ -23,22 +25,35 @@ def inputs(level_array,x,y):
     observed_width = INPUT_VIEW_RANGE_X*2+1
     observed_height = INPUT_VIEW_RANGE_Y*2+1
     observed = np.zeros((observed_width,observed_height))
-    
+
     center_x = round(x / CELL_WIDTH)
     center_y = round(y / CELL_HEIGHT)
-    
+
     observed_level_left = max(0,min(level_width,center_x - INPUT_VIEW_RANGE_X))
     observed_level_top = max(0,min(level_height,center_y - INPUT_VIEW_RANGE_Y))
     observed_level_right = max(0,min(level_width,center_x + INPUT_VIEW_RANGE_X + 1))
     observed_level_bottom = max(0,min(level_height,center_y + INPUT_VIEW_RANGE_Y + 1))
-    
+
     if observed_level_left == observed_level_right or observed_level_top == observed_level_bottom:
         return observed
-    
+
     level_observed_left = max(0,min(observed_width,-(center_x - INPUT_VIEW_RANGE_X)))
     level_observed_top = max(0,min(observed_height,-(center_y - INPUT_VIEW_RANGE_Y)))
     level_observed_right = max(0,min(observed_width,observed_width-(center_x + INPUT_VIEW_RANGE_X + 1 - level_width)))
     level_observed_bottom = max(0,min(observed_height,observed_height-(center_y + INPUT_VIEW_RANGE_Y + 1 - level_height)))
-    
+
     observed[level_observed_left:level_observed_right,level_observed_top:level_observed_bottom] = level_array[observed_level_left:observed_level_right,observed_level_top:observed_level_bottom]
     return observed
+
+
+def load(filename):
+    """Load a neural network from the file ``filename``.  Returns an
+    instance of Network.
+    """
+    f = open(filename, "r")
+    data = json.load(f)
+    f.close()
+    net = Network(data["sizes"])
+    net.weights = [np.array(w) for w in data["weights"]]
+    net.biases = [np.array(b) for b in data["biases"]]
+    return net

@@ -3,6 +3,7 @@ import pygame
 from pygame import *
 from game_objects import *
 from settings import *
+from network import *
 from population import *
 from genome import *
 from level_design import levels
@@ -448,7 +449,9 @@ def launch_level(level=levels[0], genome=None):
             if e.type == QUIT:
                 exit_game()
             if e.type == player_finish:
-                return_object['event'] = player_finish
+                return_object['event'] = restart_level
+                return_object['genome'] = genome
+                return_object['score'] = specific_bot.rect.left
                 return return_object
             if e.type == player_died:
                 return_object['event'] = player_died
@@ -542,4 +545,29 @@ def launch_level(level=levels[0], genome=None):
 
 
 if __name__ == "__main__":
-    main_menu()
+    if len(sys.argv) != 1:
+        #Evaluate a single genome
+        if str(sys.argv[1])=="-evaluate":
+            print(str(sys.argv[2]))
+            net = load(str(sys.argv[2]))
+            genome = Genome(net)
+            global savestat
+            savestat = False
+            fitness = []
+            for i in range(100):
+                level_output = launch_level(levels[0], genome)
+                if level_output['event'] == restart_level:
+                    score = level_output['score']
+                    fitness.append(score)
+                    print("fitness : %s " % score)
+
+            average = sum(fitness) / float(len(fitness))
+            printc("Average fitness : %s" % average,"red")
+            pygame.quit()
+            sys.exit()
+        #Show the stat of an experiment
+        if str(sys.argv[1])=="-stats":
+            pass
+            # showStat(str(sys.argv[2]))
+    else:
+        main_menu()

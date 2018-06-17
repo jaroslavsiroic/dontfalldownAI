@@ -3,9 +3,9 @@ class Config(object):
     #If Debug is true, show various info on the game screen
     debug = False
     #The architecture of the ANN, please do not change first and last element of the array
-    networkArchitecture = [(INPUT_VIEW_RANGE_X*2+1)*(INPUT_VIEW_RANGE_Y*2+1),40,20,10,3]
+    networkArchitecture = [(INPUT_VIEW_RANGE_X*2+1)*(INPUT_VIEW_RANGE_Y*2+1),20,20,10,4]
     #Number of Bots in a generation
-    numberOfIndividuals = 50
+    numberOfIndividuals = 20
     #Maximum generation before exiting the Genetic Algorithm
     maxGeneration = 2000
     #If fitnessIsScore is True, the fitness of an individual will be the score (pipe passed succesfully).

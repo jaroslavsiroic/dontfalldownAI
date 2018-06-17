@@ -114,16 +114,22 @@ class Bot(Player):
         self.left = True
         self.right = False
 
-    def ai(self):
+    def do_nothing(self):
         self.up = False
         self.right = False
         self.left = False
-        if self.input_table[0] > 0.5:
-            self.go_left()
-        if self.input_table[1] > 0.5:
-            self.go_right()
+
+    def ai(self):
+        self.do_nothing()
+        if self.input_table[0] > 0.5 or self.input_table[1] > 0.5:
+            if self.input_table[0] > self.input_table[1]:
+                self.go_left()
+            else:
+                self.go_right()
         if self.input_table[2] > 0.5:
             self.go_jump()
+        if self.input_table[3] > 0.5:
+            self.do_nothing()
 
     def update(self):
         self.ai()

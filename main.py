@@ -124,12 +124,9 @@ def pause_menu(test_array):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == restart_level \
-                    or event.type == back_to_menu \
+            if event.type == back_to_menu \
                     or event.type == resume:
                 return event.type
-            if event.type == KEYDOWN and event.key == K_SPACE:
-                return restart_level
         largeText = pygame.font.SysFont(FONT, 115)
         TextSurf, TextRect = text_objects("Game paused", largeText, WHITE)
         TextRect.center = (HALF_WIDTH, 50)
@@ -151,13 +148,7 @@ def pause_menu(test_array):
         #inputs debug functionality
 
         button("Resume", HALF_WIDTH-100, 200, 200, 50, PRIMARY, PRIMARY_HOVER, event_resume)
-        button("Restart level", HALF_WIDTH - 100, 260, 200, 50, PRIMARY, PRIMARY_HOVER, event_restart_level)
         button("Back to menu", HALF_WIDTH-100, 320, 200, 50, DANGER, DANGER_HOVER, event_back_to_menu)
-
-        largeText = pygame.font.SysFont(FONT2, 40)
-        TextSurf, TextRect = text_objects("Hit 'space' to restart", largeText, WHITE)
-        TextRect.center = (HALF_WIDTH, WIN_HEIGHT - 40)
-        screen.blit(TextSurf, TextRect)
 
         pygame.display.update()
         timer.tick(15)
@@ -331,6 +322,7 @@ def level_menu(level=levels[0], index=0):
                 if score > localBestFitness:
                     global bestFitness
                     bestFitness = score
+                    localBestFitness = score
                     genome = level_output['genome']
                     genome.network.save(today + "/bestfitness.json")
                 botnmbr += 1
@@ -339,7 +331,7 @@ def level_menu(level=levels[0], index=0):
         # global fitnessovergeneration
         # fitnessovergeneration.append(population.averageFitness())
 
-        # lastgenerationaveragefitness = population.averageFitness()
+        lastgenerationaveragefitness = population.averageFitness()
 
         # global fittestovergeneration
         # fittestovergeneration.append(population.findFittest().fitness)
@@ -475,8 +467,6 @@ def launch_level(level=levels[0], genome=None):
                 if pause_event == restart_level or pause_event == back_to_menu:
                     return_object['event'] = pause_event
                     return return_object
-            if e.type == KEYDOWN and e.key == K_ESCAPE:
-                raise SystemExit("ESCAPE")
             if e.type == KEYDOWN and e.key == K_SPACE:
                 event_pause()
             if e.type == KEYDOWN and e.key == K_UP:
@@ -519,19 +509,6 @@ def launch_level(level=levels[0], genome=None):
         NNinput = inputs(level_array,specific_bot.rect.left,specific_bot.rect.top).flatten()
         NNinput = np.reshape(NNinput, (NNinput.shape[0],-1))
         specific_bot.input_table = genome.network.feedforward(NNinput)
-
-        #inputs debug functionality
-        if INPUT_OUTPUT_DEBUG == 1:
-            input_randomization_frame_countdown -= 1
-            if input_randomization_frame_countdown < 0:
-                input_randomization_frame_countdown = input_randomization_frame_max
-                input_rand = specific_bot.rnd.randint(0, 2)
-                specific_bot.input_table[0] = input_rand
-                input_rand = specific_bot.rnd.randint(0, 2)
-                specific_bot.input_table[1] = input_rand
-                input_rand = specific_bot.rnd.randint(0, 2)
-                specific_bot.input_table[2] = input_rand
-        #inputs debug functionality
 
         platforms.update()
         enemies.update()

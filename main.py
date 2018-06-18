@@ -423,7 +423,7 @@ def launch_level(level=levels[0], genome=None):
     }
 
     while in_game:
-        timer.tick(90)
+        timer.tick(4000)
 
         for e in pygame.event.get():
             if e.type == QUIT:

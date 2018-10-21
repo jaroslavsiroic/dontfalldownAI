@@ -21,7 +21,7 @@ class Config(object):
     #If mutateNewBorn is True, the new genomes will be mutated right after being breaded
     mutateNewBorn = True
     #The rate of mutation when we evolve the population
-    mutationRate = 0.005
+    mutationRate = 0.015
     #The selection process (rouletteWheelSelection or tournamentSelection)
     selectionMethod = "rouletteWheelSelection"
     #If you chose tournamentSelection, the size of the tournament
@@ -32,7 +32,7 @@ class Config(object):
     #If FatherRandomElite is True the GA will choose a random elite, and if it's False it will choose the fittest of all
     FatherRandomElite = True
     #The number of Elite the GA will keep. 0 is a bad idea
-    numberofEliteWeKeep = 2
+    numberofEliteWeKeep = 5
 
 
 

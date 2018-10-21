@@ -5,7 +5,7 @@ class Config(object):
     #The architecture of the ANN, please do not change first and last element of the array
     networkArchitecture = [(INPUT_VIEW_RANGE_X*2+1)*(INPUT_VIEW_RANGE_Y*2+1),20,20,10,4]
     #Number of Bots in a generation
-    numberOfIndividuals = 25
+    numberOfIndividuals = 45
     #Maximum generation before exiting the Genetic Algorithm
     maxGeneration = 2000
     #If fitnessIsScore is True, the fitness of an individual will be the score (pipe passed succesfully).
@@ -21,7 +21,7 @@ class Config(object):
     #If mutateNewBorn is True, the new genomes will be mutated right after being breaded
     mutateNewBorn = True
     #The rate of mutation when we evolve the population
-    mutationRate = 0.005
+    mutationRate = 0.015
     #The selection process (rouletteWheelSelection or tournamentSelection)
     selectionMethod = "rouletteWheelSelection"
     #If you chose tournamentSelection, the size of the tournament

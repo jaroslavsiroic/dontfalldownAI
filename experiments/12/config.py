@@ -21,9 +21,9 @@ class Config(object):
     #If mutateNewBorn is True, the new genomes will be mutated right after being breaded
     mutateNewBorn = True
     #The rate of mutation when we evolve the population
-    mutationRate = 0.005
+    mutationRate = 0.75
     #The selection process (rouletteWheelSelection or tournamentSelection)
-    selectionMethod = "rouletteWheelSelection"
+    selectionMethod = "tournamentSelection"
     #If you chose tournamentSelection, the size of the tournament
     tournamentSize = 5
     #If FatherAlwaysElite is True, the father of all new genomes will be one of the elite

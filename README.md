@@ -9,8 +9,11 @@ To run this game you will need to install python 3 and pygame. To run this game 
 
 `python main.py`
 
-## Tutorial
-![tutorial image](./assets/background_and_tutorial.png)
+## Screenshot from the project
+![screenshot](./assets/Screenshot_3.png)
+
+## Explenation of the input matrix color visualization from the game
+![matrix](./assets/dfd_input_matrix.png)
 
 ## Source used
 * Dont fall down game repo [here](https://github.com/jaroslavsiroic/dontfalldown)

@@ -21,7 +21,7 @@ class Config(object):
     #If mutateNewBorn is True, the new genomes will be mutated right after being breaded
     mutateNewBorn = True
     #The rate of mutation when we evolve the population
-    mutationRate = 0.005
+    mutationRate = 0.025
     #The selection process (rouletteWheelSelection or tournamentSelection)
     selectionMethod = "rouletteWheelSelection"
     #If you chose tournamentSelection, the size of the tournament

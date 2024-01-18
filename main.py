@@ -479,12 +479,12 @@ def launch_level(level=levels[0], genome=None):
             for x in range(48):
                 screen.blit(bg, (x * 48, y * 48))
 
-        if player is None and len(bots.sprites()) > 0:
+        if player == None and len(bots.sprites()) > 0:
             camera.update(sorted(bots.sprites(), reverse=True, key=lambda b: b.rect.left)[0])
-        elif player is not None:
+        elif player != None:
             camera.update(player)
             player.update(up, down, left, right, enemies)
-        elif len(bots.sprites()) is 0:
+        elif len(bots.sprites()) == 0:
             event_restart_level()
         # update player, draw everything else
 
